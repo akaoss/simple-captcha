@@ -75,17 +75,10 @@ module SimpleCaptcha
         key = simple_captcha_key(nil, request)
         options = {}
         options[:field_value] = set_simple_captcha_data(key, options)
-        url = simple_captcha_image_url(key, options)
-
         status = 200
-        id = request.params['id']
-        captcha_hidden_field_id = simple_captch_hidden_field_id(id)
 
-        body = %Q{
-                    $("##{id}").attr('src', '#{url}');
-                    $("##{ captcha_hidden_field_id }").attr('value', '#{key}');
-                  }
-        headers = {'Content-Type' => 'text/javascript; charset=utf-8', "Content-Disposition" => "inline; filename='captcha.js'", "Content-Length" => body.length.to_s}.merge(SimpleCaptcha.extra_response_headers)
+        body = %Q{{"code": "#{key}", "time": #{Time.now.to_i}}}
+        headers = {'Content-Type' => 'application/json; charset=utf-8', "Content-Length" => body.length.to_s}.merge(SimpleCaptcha.extra_response_headers)
         [status, headers, [body]]
       end
   end
